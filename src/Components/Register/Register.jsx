@@ -1,5 +1,7 @@
 import { useState } from "react";
 import moment from "moment";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Register({ state, acc }) {
   const [fullname, setFullname] = useState();
   const [email, setEmail] = useState();
@@ -37,9 +39,29 @@ function Register({ state, acc }) {
             date
           )
           .send({ from: acc });
+        toast.success(`Your FIR ID ${Number(idText)} is registered`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
         console.log("Hii");
       }
     } catch (error) {
+      toast.error("Check all field must need to be fill.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       console.log("Byee");
     }
   };
@@ -47,14 +69,12 @@ function Register({ state, acc }) {
   const styles = {
     minHeight: "90vh",
   };
-  const text = {
-    color: "white",
-  };
   const bgcolor = {
     backgroundColor: "#161e2d",
   };
   return (
     <>
+      <ToastContainer />
       <section class="text-gray-400 bg-gray-900 body-font relative">
         <form
           class="container px-5 py-24 mx-auto"
@@ -134,7 +154,6 @@ function Register({ state, acc }) {
               <label
                 for="countries"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                style={text}
               >
                 Select an option
               </label>
@@ -146,12 +165,12 @@ function Register({ state, acc }) {
                 style={bgcolor}
               >
                 <option></option>
-                <option style={text}> Theft / चोरी </option>
-                <option style={text}> Violence / हिंसा </option>
-                <option style={text}> Cyber Crime / साइबर क्राइम </option>
-                <option style={text}> Drug / नशीली पदार्थ </option>
-                <option style={text}> Homicide / मानव हत्या </option>
-                <option style={text}> Other / अन्य </option>
+                <option> Theft / चोरी </option>
+                <option> Violence / हिंसा </option>
+                <option> Cyber Crime / साइबर क्राइम </option>
+                <option> Drug / नशीली पदार्थ </option>
+                <option> Homicide / मानव हत्या </option>
+                <option> Other / अन्य </option>
               </select>
 
               <div class="p-2 w-full">

@@ -3,6 +3,7 @@ import Navbar from './Components/Navbar/Navbar';
 import Hero from './Components/Hero/Hero';
 import Register from './Components/Register/Register';
 import Check from './Components/Check/Check';
+import Admin from './Components/Admin/Admin';
 import { BrowserRouter as Router,Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                 <Route exact path='/' element={< Hero />}></Route>
                 <Route exact path='/register' element={< Register state={state} acc={acc} />}></Route>
                 <Route exact path='/check' element={< Check state={state} />}></Route>
+                <Route exact path='/admin' element={< Admin state={state} />}></Route>
           </Routes>
       </Router>
     </>
