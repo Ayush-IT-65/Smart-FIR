@@ -1,15 +1,12 @@
 import { useState, useRef } from "react";
+import moment from "moment";
 import emailjs from "@emailjs/browser";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-function Check({ state }) {
-  const [get, setGet] = useState();
-  const [list, setList] = useState([]);
-  const { contract } = state;
-
-  const getdata = async (e) => {
+function Admin({ state }) {
+  const [check_id, setCheck_id] = useState();
+  const checkid = async (e) => {
     let acc = "";
-    let userAddress = "";
     let owner = "";
     try {
       e.preventDefault();
@@ -17,13 +14,7 @@ function Check({ state }) {
         method: "eth_requestAccounts",
       });
       acc = accounts[0];
-      console.log(acc);
-
-      userAddress = await contract.methods.checkuser(get).call();
-      console.log(userAddress);
-
       owner = await contract.methods.owner().call();
-      console.log(owner);
     } catch (error) {
       toast.error("Connect to Metamask", {
         position: "top-right",
@@ -36,23 +27,13 @@ function Check({ state }) {
         theme: "dark",
       });
     }
-    if (acc === userAddress.toLowerCase() || acc === owner.toLowerCase()) {
+    if (acc === owner.toLowerCase()) {
       try {
         e.preventDefault();
-        console.log(get);
-        const nameText = await contract.methods.userFIR(get).call();
-        console.log(nameText);
-        setList(nameText);
-        toast.success("Here is your FIR Detail", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        const { contract } = state;
+        const check_idText = await contract.methods.check_id().call();
+        console.log(Number(check_idText));
+        setCheck_id(Number(check_idText));
       } catch (error) {
         toast.error("Connect to Metamask", {
           position: "top-right",
@@ -66,7 +47,113 @@ function Check({ state }) {
         });
       }
     } else {
-      toast.error("You are not the Owner of FIR", {
+      toast.error("You are not the admin", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
+
+  const [list, setList] = useState([]);
+  const { contract } = state;
+  const getdata = async (e) => {
+    try {
+      e.preventDefault();
+      console.log(check_id);
+      const nameText = await contract.methods.userFIR(check_id).call();
+      console.log(nameText);
+      setList(nameText);
+      toast.success("Here is your FIR Detail", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } catch (error) {
+      toast.error("Connect to Metamask", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
+
+  const approve = async (e) => {
+    try {
+      e.preventDefault();
+      const date = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const { contract } = state;
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      await contract.methods
+        .checkFIR(Number(1), date)
+        .send({ from: accounts[0] });
+      toast.success("Your FIR is registered", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      sendApprove(e);
+    } catch (error) {
+      toast.error("Something went wrong! Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
+
+  const reject = async (e) => {
+    try {
+      e.preventDefault();
+      const date = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const { contract } = state;
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      await contract.methods
+        .checkFIR(Number(2), date)
+        .send({ from: accounts[0] });
+      toast.success("Your FIR is registered", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      sendReject(e);
+      console.log("Hii");
+    } catch (error) {
+      toast.error("Something went wrong! Please try again.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -81,7 +168,7 @@ function Check({ state }) {
 
   const form = useRef();
 
-  const sendEmail = (e) => {
+  const sendApprove = (e) => {
     e.preventDefault();
 
     toast.success("Your FIR Copy is sented to your Email.", {
@@ -97,10 +184,51 @@ function Check({ state }) {
 
     emailjs
       .sendForm(
-        "service_9jlfmii",
-        "template_joghkbb",
+        "service_eprqrnd",
+        "template_a73fyjy",
         form.current,
-        "6O31vGHs76pZ018iX"
+        "S-hUOdudXl0DJcoYB"
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          toast.error("Something went wrong! Please try again.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          console.log(error.text);
+        }
+      );
+  };
+
+  const sendReject = (e) => {
+    e.preventDefault();
+
+    toast.success("Your FIR Copy is sented to your Email.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+
+    emailjs
+      .sendForm(
+        "service_eprqrnd",
+        "template_eg1hm5h",
+        form.current,
+        "S-hUOdudXl0DJcoYB"
       )
       .then(
         (result) => {
@@ -145,18 +273,26 @@ function Check({ state }) {
               <div class="p-2 w-full">
                 <div class="relative">
                   <label for="name" class="leading-7 text-sm text-gray-400">
-                    Enter the Complain ID
+                    Next Pending Complain ID
                   </label>
                   <input
                     type="text"
                     autocomplete="off"
                     id="name"
-                    onChange={(e) => setGet(Number(e.target.value))}
+                    value={check_id}
+                    readOnly
                     class="w-full bg-gray-800 bg-opacity-40 rounded border border-gray-700 focus:border-indigo-500 focus:bg-gray-900 focus:ring-2 focus:ring-indigo-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                   />
                 </div>
               </div>
-              <div class="p-2 w-full">
+              <div class="p-2 w-full flex sm:flex-row flex-col justify-between items-center">
+                <button
+                  class="flex mb-0 flex items-center mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                  onClick={checkid}
+                >
+                  Get Pending FIR ID
+                </button>
+
                 <button
                   class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                   onClick={getdata}
@@ -363,12 +499,21 @@ function Check({ state }) {
                   />
                 </div>
               </div>
-              <div class="p-2 w-full">
+              <div class="p-2 w-full flex sm:flex-row flex-col justify-between items-center">
+                <button
+                  class="flex mb-0 flex items-center mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                  style={{ backgroundColor: "green" }}
+                  onClick={approve}
+                >
+                  Approve
+                </button>
+
                 <button
                   class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
-                  onClick={sendEmail}
+                  style={{ backgroundColor: "red" }}
+                  onClick={reject}
                 >
-                  Send me copy of FIR
+                  Reject
                 </button>
               </div>
             </div>
@@ -378,5 +523,4 @@ function Check({ state }) {
     </>
   );
 }
-
-export default Check;
+export default Admin;
